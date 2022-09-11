@@ -1,0 +1,54 @@
+#!/bin/bash
+echo -n "Дата: "
+date
+echo -n "Имя учетной записи: "
+hostname
+echo -n "Доменное имя ПК: "
+domainname
+echo "Процессор: "
+echo -e -n "\t"
+lscpu | grep "Имя модели"
+echo -e -n "\t"
+lscpu | grep "Архитектура"
+echo -e -n "\t"
+lscpu | grep "CPU MHz"
+echo -e -n "\t"
+lscpu | grep -m 1 "CPU(s)"
+echo -e -n "\t"
+lscpu | grep "Thread"
+echo "Оперативная память:"
+echo -e -n "\tВсего: "
+free -h | grep "Память" | gawk '{print $2}'
+echo -e -n "\tДоступно: "
+free -h | grep "Память" | gawk '{print $7}'
+echo "Жесткий диск:"
+echo -e -n "\tВсего: "
+df --output=source,size -h --total | grep total | gawk '{print $2}'
+echo -e -n "\tДоступно: "
+df --output=source,avail -h --total | grep total | gawk '{print $2}'
+echo -e -n "\tСмонтировано в корневую директорию /: "
+mount=$(df --output=target -h | grep -v "/\w" -c)
+echo $(($mount-1))
+echo -e -n "\tSWAP всего: "
+free -h | grep "Подкачка" | gawk '{print $2}'
+echo -e -n "\tSWAP доступно: "
+free -h | grep "Подкачка" | gawk '{print $4}'
+echo "Сетевые интерфейсы:"
+echo -e -n "\tКоличество сетевых интерфейсов: "
+ifconfig | grep -w "inet" -c
+echo -e "№\tИмя\tMAC адрес\t\tIP адрес\tСкорость соединения"
+NETS=$(ip -o -4 address | gawk '{print $2}')
+count=1
+for net in $NETS
+do
+echo -e -n "$count:\t$net\t"
+echo -e -n "$(ip link | grep $net -A 1 | grep link/ | gawk '{print $2}')\t"
+echo -e -n "$(ip -4 -o address | grep -w $net | grep inet | gawk '{print $4}')\t"
+if [ $net != "lo" ]
+then
+echo $(ethtool $net 2> /dev/null | grep Speed | gawk '{print $2}')
+else
+echo ""
+fi
+count=$(($count+1))
+done
