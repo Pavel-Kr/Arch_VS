@@ -12,20 +12,21 @@ double* Test() {
     double* results = new double[3];
     struct timespec start,finish;
     double sec,nsec;
+    int arg=rand();
     clock_gettime(CLOCK_REALTIME,&start);
-    sin(rand());
+    sin(arg);
     clock_gettime(CLOCK_REALTIME,&finish);
     sec=finish.tv_sec-start.tv_sec;
     nsec=finish.tv_nsec-start.tv_nsec;
     results[0] = sec*1000+nsec/1000000.0;
     clock_gettime(CLOCK_REALTIME,&start);
-    cos(rand());
+    cos(arg);
     clock_gettime(CLOCK_REALTIME,&finish);
     sec=finish.tv_sec-start.tv_sec;
     nsec=finish.tv_nsec-start.tv_nsec;
     results[1] = sec*1000+nsec/1000000.0;
     clock_gettime(CLOCK_REALTIME,&start);
-    log(rand());
+    log(arg);
     clock_gettime(CLOCK_REALTIME,&finish);
     sec=finish.tv_sec-start.tv_sec;
     nsec=finish.tv_nsec-start.tv_nsec;
@@ -34,7 +35,7 @@ double* Test() {
 }
 
 double calculate_perf(double average){
-    return 1/average;
+    return 1/average;//sprosit'
 }
 
 char* get_CPU_name(){
@@ -63,7 +64,7 @@ void report(char* cpu_name, const char* task, double time, int l_num, double ave
     fprintf(file_res, "%s;", task);
     fprintf(file_res, "int;");
     fprintf(file_res, "None;");
-    fprintf(file_res, ";");//Instruction count
+    fprintf(file_res, ";");//Instruction count (sprosit')
     fprintf(file_res, "clock_gettime();");
     fprintf(file_res, "%f msec;", time);
     fprintf(file_res, "%d;", l_num);
@@ -86,7 +87,6 @@ int main()
     double** test_results = new double* [tests];
     for (int i = 0; i < tests; i++) {
         test_results[i] = Test();
-        //cout << "Test " << i + 1 << " sin= " << test_results[i][0] << "sec, cos= " << test_results[i][1] << "sec, log= " << test_results[i][2] << "sec" << endl;
     }
     double average_time[3] = { 0,0,0 };
     double dispersion[3] = { 0,0,0 };
